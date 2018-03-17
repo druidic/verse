@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mkdir -p .build-tmp
+find src -name '*.js' \
+  | grep -v '[Mm]ain.js' \
+  | xargs cat \
+  | tee .build-tmp/verse.js .build-tmp/test.js >/dev/null
+
+cat src/main.js     >> .build-tmp/verse.js
+cat src/testMain.js >> .build-tmp/test.js
+
+node .build-tmp/test.js
+
