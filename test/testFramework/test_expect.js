@@ -30,4 +30,9 @@ describe('expect', () => {
       params: [2]
     })
   })
+
+  it('assumes a curryable argument order for predicates', () => {
+    expect(() => _expect({a: 1}, has, 'a')).not.toThrow()
+    expect(() => _expect('hello', startsWith, 'hell')).not.toThrow()
+  })
 })
