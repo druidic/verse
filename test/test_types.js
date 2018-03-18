@@ -1,9 +1,3 @@
-
-
-function isObject(a) {
-  return Object.prototype.toString.call(a) === '[object Object]'
-}
-
 describe('a type', () => {
   it('is a predicate and a default value that satisfies it', () => {
     let stringType = defaultingTo('a', isString)

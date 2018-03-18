@@ -37,3 +37,7 @@ function isString(a) {
 function isNumber(a) {
   return a === +a
 }
+
+function isObject(a) {
+  return Object.prototype.toString.call(a) === '[object Object]'
+}
