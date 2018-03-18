@@ -56,3 +56,31 @@ describe('has', () => {
     expect(has('a')({a: 1})).toBe(true)
   })
 })
+
+describe('not', () => {
+  it('inverts a predicate', () => {
+    expect(not(isTruthy)(false)).toBe(true)
+  })
+
+  it('takes its name from the predicate', () => {
+    expect(not(isTruthy).name).toBe('not(isTruthy)')
+  })
+})
+
+describe('isEmpty', () => {
+  it('returns true for an empty array', () => {
+    expect(isEmpty([])).toBe(true)
+  })
+
+  it('returns true for an empty Set', () => {
+    expect(isEmpty(new Set())).toBe(true)
+  })
+
+  it('returns false for an array with one item', () => {
+    expect(isEmpty([1])).toBe(false)
+  })
+
+  it('returns false for a Set with one item', () => {
+    expect(isEmpty(new Set([1]))).toBe(false)
+  })
+})
