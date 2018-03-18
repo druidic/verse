@@ -2,7 +2,7 @@
 
 Verse is a comprehensive browser application framework inspired by Elm, Redux,
 and the Redux-Saga middleware. Its design pushes the UI toward text-based
-interfaces in favor of HTML and CSS. We anticipate that this will produce more
+interfaces and away from HTML and CSS. We anticipate that this will produce more
 reliable and testable application designs. Verse also provides an ergonomic
 Canvas API for applications like games that require richer graphical interfaces.
 
