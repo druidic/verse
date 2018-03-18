@@ -7,7 +7,10 @@ find src -name '*.js' \
   | tee .build-tmp/verse.js .build-tmp/test.js >/dev/null
 
 cat src/main.js     >> .build-tmp/verse.js
-cat src/testMain.js >> .build-tmp/test.js
 
-node .build-tmp/test.js
+find test -name '*.js' \
+  | xargs cat \
+  >> .build-tmp/test.js
+
+jasmine .build-tmp/test.js
 
