@@ -59,6 +59,15 @@ describe('a type', () => {
     expect(satisfies(type, {...ok, qux: 0})) .toBe(false)
   })
 
+  it('typechecks the same value multiple times', () => {
+    let type = {
+      foo: isString,
+      bar: isNumber
+    }
+    let ok = {foo: '', bar: 0}
+    expect(satisfies(type, ok)).toBe(true)
+  })
+
   it('typechecks a sum type', () => {
     let type = oneOf('a', 'b')
     expect(satisfies(type, 'a')).toBe(true)
@@ -100,5 +109,12 @@ describe('a type', () => {
     expect(satisfies(composite, good))   .toBe(true)
     expect(satisfies(composite, badUser)).toBe(false)
     expect(satisfies(composite, badOpt)) .toBe(false)
+  })
+
+  it('marks objects that passed the typecheck so they can be fast-tracked later', function() {
+    let type = {x: isNumber}
+    let value = {x: 1}
+    satisfies(type, value)
+    expect(value._verse_type).toBe(type)
   })
 })

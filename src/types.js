@@ -31,6 +31,7 @@ function objectsHaveSameKeys(a, b) {
 
 function satisfies(type, value) {
   if (arguments.length < 2) return partialApply(satisfies, arguments)
+  if (value && value._verse_type) return value._verse_type === type
   if (typeof type === 'function') return type(value)
   _expect(type, isObject)
   if (!isObject(value)) return false
@@ -38,6 +39,7 @@ function satisfies(type, value) {
   for (let key of Object.keys(type)) {
     if (!satisfies(type[key], value[key])) return false
   }
+  Object.defineProperty(value, '_verse_type', {value: type})
   return true
 }
 
