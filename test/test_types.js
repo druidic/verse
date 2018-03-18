@@ -111,10 +111,21 @@ describe('a type', () => {
     expect(satisfies(composite, badOpt)) .toBe(false)
   })
 
-  it('marks objects that passed the typecheck so they can be fast-tracked later', function() {
+  it('marks objects that passed the typecheck so they can be fast-tracked later', () => {
     let type = {x: isNumber}
     let value = {x: 1}
     satisfies(type, value)
     expect(value._verse_type).toBe(type)
+  })
+
+  it('allows objects with equivalent but non-pointer-identical types to be swapped', () => {
+    let a = {x: 1}
+    let b = {x: 1}
+    let type = {
+      a: {x: isNumber},
+      b: {x: isNumber}
+    }
+    expect(satisfies(type, {a, b})).toBe(true)
+    expect(satisfies(type, {a: b, b: a})).toBe(true)
   })
 })
