@@ -6,7 +6,7 @@ interfaces in favor of HTML and CSS. We anticipate that this will produce more
 reliable and testable application designs. Verse also provides an ergonomic
 Canvas API for applications like games that require richer graphical interfaces.
 
-## Why
+## Why?
 
 Existing JavaScript UI frameworks and development practices do not adequately
 promote fast feedback loops during development. This is unfortunate, as
@@ -29,32 +29,39 @@ have created headaches of their own: agonizingly slow compilation, unreliable fe
 (hot-swapping, anyone?), and dependency hell are the new state of the art. As
 an example of how bad this can get: a React/Redux project that I worked on in 2017
 had unit tests that took 5 seconds to run—not stellar, but passable. However,
-*transpiling* and `webpack`ing those tests (they ran in a browser with Karma) took
-upwards of a minute. As [Gary Bernhardt aptly put it](https://www.youtube.com/watch?v=RAxiiRPHS9k&t=706s),
+transpiling and `webpack`ing those tests (they ran in a browser with Karma) took
+upwards of a minute. As [Gary Bernhardt aptly put it](https://www.youtube.com/watch?v=RAxiiRPHS9k&t=931s),
 with that kind of wait time, the thing called TDD just doesn't exist anymore. It's
 impossible to lean on your feedback loop with any efficacy when it takes a *minute*
 to get that feedback.
 
-Most likely, the shortcomings in our tools are solvable with a little know-how, but the tools
-themselves are either so poorly documented or so endlessly configurable that no one
-seems to be able to use them well. It's hard to fault developers for this; why devote
-your time to learning a particular tool when everyone will soon abandon it for whatever
-new shiny thing emerges from next year's crop of NPM packages?
+The latest "solutions" to the problems facing modern JavaScript development have consisted
+of incremental *additions* of tools and libraries. They have thus completely failed to
+address the root cause of the problem, which is that there is too much poorly-understood,
+unreliable code in the stack already. The very best we can hope for is that these additional
+layers of tooling will allow us to realize the promise of the layers that came before—at
+the cost of increased test and build times. That's not an exchange I'm eager to make.
 
-This endless tail-chasing has produced a wave of ennui so widespread it has a name:
-[JavaScript Fatigue](https://medium.com/@ericclemmons/javascript-fatigue-48d4011b6fc4).
-Personally, I think the name is unfortunate because it frames JavaScript as the culprit
-for all the problems, and it's not. JavaScript is more or less the same, simple,
-[occasionally bizarre](https://www.destroyallsoftware.com/talks/wat) language it always
-has been. JavaScript runtimes have actually gotten *better*: performance has
-improved dramatically, and browser vendors have finally standardized their
-APIs to the point where we can forego most of the vendor-specific hacks for which
-the language was once notorious. JavaScript is not the problem, *the development
-environment is*.
+## How?
 
-I contend that the world has changed: the bogeys that once plagued JavaScript development
-are no more, and we are too busy warding them off with offerings of burnt meat and NPM packages
-to notice that they are gone. The software development landscape has been steadily
-improving around us, so that what once seemed the best path is now merely an adequate one.
-If we return to first principles and reinvent our tools and practices, I think we
-will discover that the previously unimaginable is now possible.
+**Verse speeds up the development feedback loop and ensures that application code is fast and
+reliable**. It does this by largely ignoring the existing "best practices" (some would say "fads")
+of JavaScript development and building its own, much simpler, tooling stack from scratch.
+It does take advantage of choice *concepts* drawn from other languages and libraries, such as
+**immutability, pure functions, runtime type checking, thread-style concurrency using generators, and
+hot-swapping**. Its design is chosen specifically to enable programmers to leverage
+these concepts to their fullest effect.
+
+To dodge the `webpack` step, Verse code is written entirely in a browser-based editor called the Grove.
+Tests also run in the browser, and are fast enough that they can be re-run on every editor keystroke.
+The Verse application architecture, which is based on Redux, allows fine-grained, fast tests
+that don't require mocks or other complications to handle asynchronous or side-effecting code.
+
+NPM dependency hell is also not an issue, because your code won't have any dependencies. Verse provides
+everything you might need, including a type system, HTTP utilities, and an autocurrying
+functional-toolbelt library.
+
+If all of this sounds dauntingly complex, don't worry. Verse is implemented in just a few hundred
+straightforward, thoroughly-tested lines of JavaScript, so you can easily read the source if you're
+confused about something. It's the kind of framework you could write yourself, but you can be glad
+you don't have to.
