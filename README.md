@@ -37,10 +37,11 @@ you can read the code to figure out why it did that.
   source code".
 - Upgrading any packages you "install" is a similarly manual process:
   delete the old version, paste in the new one.
-- Working with Git or any other VCS (this is because
+- There's a bit of added friction to working with Git or any
+  other VCS. This is because
   the Grove IDE makes checkins a bit more annoying—you have
   to export your source code from the web browser to get it
-  onto your filesystem).
+  onto your filesystem.
 
 ### Things That Might Get Better In Future Versions
 
