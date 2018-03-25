@@ -17,7 +17,7 @@ you can read the code to figure out why it did that.
 ### Things Verse Makes Easier
 
 - unit testing without mocks or boilerplate
-- making precise, expressive type assertions to cover integration points your tests don't check
+- making precise runtime type assertions to cover integration points your tests don't check
 - hot reloading of app code
 - *extremely* fast feedback loops thanks to the aforementioned
 - text- and canvas-based UIs
@@ -32,7 +32,9 @@ you can read the code to figure out why it did that.
 
 - DOM-based UIs are impossible without some hacking of the
   framework. Verse *really* wants you to just use plain text
-  and canvas.
+  and canvas. In part, this is because getting HTML/CSS UIs
+  to look *just right* can be a huge time-sink. Verse
+  encourages you to spend that time on actual functionality instead.
 - You can't install NPM packages unless you get or make
   a UMD build. "Install" here really means "copy-paste into your
   source code".
