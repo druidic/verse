@@ -7,7 +7,7 @@ function isExactly(a, b) {
 }
 
 function has(prop, obj) {
-  if (arguments.length < 2) return partialApply(has, arguments)
+  if (arguments.length < 2) return partialApply(has, arguments, `has(${prop})`)
   return Object.prototype.hasOwnProperty.call(obj, prop)
 }
 
@@ -40,4 +40,15 @@ function isNumber(a) {
 
 function isObject(a) {
   return Object.prototype.toString.call(a) === '[object Object]'
+}
+
+function isGeneratorFunction(a) {
+  return Object.prototype.toString.call(a) === '[object GeneratorFunction]'
+}
+
+function or(p, q) {
+  let name = `or(${p.name}, ${q.name})`
+  return {[name]: (...args) =>
+    p(...args) || q(...args)
+  }[name]
 }

@@ -1,3 +1,5 @@
-function partialApply(fn, firstArgs) {
-  return (...remainingArgs) => fn(...firstArgs, ...remainingArgs)
+function partialApply(fn, firstArgs, name) {
+  return {[name]: (...remainingArgs) =>
+    fn(...firstArgs, ...remainingArgs)
+  }[name]
 }

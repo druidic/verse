@@ -67,6 +67,30 @@ describe('not', () => {
   })
 })
 
+describe('or', () => {
+  let aOrB = or(has('a'), has('b'))
+
+  it('returns true when the first predicate applies', () => {
+    expect(aOrB({a: 1})).toBe(true)
+  })
+
+  it('returns true when the second predicate applies', () => {
+    expect(aOrB({b: 1})).toBe(true)
+  })
+
+  it('returns false when neither predicate applies', () => {
+    expect(aOrB({})).toBe(false)
+  })
+
+  it('returns true when both predicates apply', () => {
+    expect(aOrB({a: 1, b: 1})).toBe(true)
+  })
+
+  it('takes its name from the predicates', () => {
+    expect(aOrB.name).toBe('or(has(a), has(b))')
+  })
+})
+
 describe('isEmpty', () => {
   it('returns true for an empty array', () => {
     expect(isEmpty([])).toBe(true)
