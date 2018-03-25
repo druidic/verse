@@ -21,8 +21,7 @@ function Bard(store) {
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
 
     if (done) {
-      let saga = stack.pop()
-      saga.timers.forEach(clearInterval)
+      pop()
       run(effect)
       return
     }
@@ -43,5 +42,15 @@ function Bard(store) {
       lastOf(stack).timers.push(interval)
       run()
     }
+
+    if (effect.effectType === 'jump') {
+      while (stack.length) pop()
+      begin(effect.generator)
+    }
+  }
+
+  function pop() {
+    let saga = stack.pop()
+    saga.timers.forEach(clearInterval)
   }
 }

@@ -27,3 +27,11 @@ function startTimer(seconds, callback) {
     callback
   }
 }
+
+
+function jump(generator) {
+  return {
+    effectType: 'jump',
+    generator
+  }
+}

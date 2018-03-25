@@ -132,7 +132,7 @@ describe('Bard', () => {
     expect(store.emit).toHaveBeenCalledWith('hello 1')
   })
 
-  it('stops timers when the main thread finishes', () => {
+  it('stops timers when the stack frame that created them pops', () => {
     b.begin(function*(tell) {
       let a = 0, b = 0
       yield startTimer(0.99, () => tell('a = ' + a++))
@@ -162,5 +162,17 @@ describe('Bard', () => {
     expect(store.emit.calls.count()).toBe(11)
     jasmine.clock().tick(9999)
     expect(store.emit.calls.count()).toBe(11)
+  })
+
+  it('jumps to another story', () => {
+    b.begin(function*(tell) {
+      yield jump(function*(tell) {
+        tell('done')
+      })
+      tell('this never happens')
+    })
+
+    expect(store.emit).toHaveBeenCalledWith('done')
+    expect(store.emit).not.toHaveBeenCalledWith('this never happens')
   })
 })
