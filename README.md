@@ -16,10 +16,11 @@ you can read the code to figure out why it did that.
 
 ### Things Verse Makes Easier
 
-- text- and canvas-based UIs
-- hot reloading of app code
-- unit testing sans mocks or boilerplate
+- unit testing without mocks or boilerplate
 - making precise, expressive type assertions to cover integration points your tests don't check
+- hot reloading of app code
+- *extremely* fast feedback loops thanks to the aforementioned
+- text- and canvas-based UIs
 - simulating "threads" of imperative code using generators, a la [redux-saga](https://github.com/redux-saga/redux-saga).
 - functional programming: it's got a library that works a lot like
   [lodash](https://lodash.com/docs),
