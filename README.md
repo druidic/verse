@@ -14,21 +14,37 @@ that's good, because it means there's no magic or mystery: Verse works
 the way you'd expect, and if you're surprised by something it does
 you can read the code to figure out why it did that.
 
-Its features include:
+### Things Verse Makes Easier
 
-- support for text- and canvas-based UIs
+- text- and canvas-based UIs
 - hot reloading of app code
-- runtime typesystem that enables precise, expressive type assertions
-- simulated "threads" of imperative code using generators, a la [redux-saga](https://github.com/redux-saga/redux-saga).
-- an API that accomodates unit testing without mocks or boilerplate
-- a built-in, blazing fast unit-test framework
-- a library of functional utilities comparable to
+- unit testing sans mocks or boilerplate
+- making precise, expressive type assertions to cover integration points your tests don't check
+- simulating "threads" of imperative code using generators, a la [redux-saga](https://github.com/redux-saga/redux-saga).
+- functional programming: it's got a library that works a lot like
   [lodash](https://lodash.com/docs),
   but with automatic currying
 
-Possible future extensions:
+### Things Verse Makes Harder
 
-- better HTTP support
+(in decreasing order of delta-difficulty)
+
+- DOM-based UIs are impossible without some hacking of the
+  framework. Verse *really* wants you to just use plain text
+  and canvas.
+- You can't install NPM packages unless you get or make
+  a UMD build. "Install" here really means "copy-paste into your
+  source code".
+- Upgrading any packages you "install" is a similarly manual process:
+  delete the old version, paste in the new one.
+- Working with Git or any other VCS (this is because
+  the Grove IDE makes checkins a bit more annoying—you have
+  to export your source code from the web browser to get it
+  onto your filesystem).
+
+### Things That Might Get Better In Future Versions
+
+- HTTP support
 - support for React components?
 
 ## Why?
