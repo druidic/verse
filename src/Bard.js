@@ -1,19 +1,39 @@
 function Bard(store) {
-  return {begin}
+  let stack = []
+  return {
+    begin,
+    receiveKeydown
+  }
 
   function begin(generator) {
     let saga = generator(store.emit)
-    recountTillNextEffect(saga)
+    stack.push(saga)
+    run()
   }
 
-  function recountTillNextEffect(saga) {
-    let effect = saga.next()
-    if (effect.done) return
-    _expect(effect.value, isObject)
-    if (effect.value.effectType === 'wait') {
-      setTimeout(
-        () => recountTillNextEffect(saga),
-        effect.value.seconds * 1000)
+  function receiveKeydown({key}) {
+    run(key)
+  }
+
+  function run(returnFromYield) {
+    if (!stack.length) return
+    let {value: effect, done} = lastOf(stack).next(returnFromYield)
+
+    if (done) {
+      stack.pop()
+      run(effect)
+      return
+    }
+
+    _expect(effect, or(isObject, isGeneratorFunction))
+
+    if (isGeneratorFunction(effect)) {
+      begin(effect)
+      return
+    }
+
+    if (effect.effectType === 'wait') {
+      setTimeout(run, effect.seconds * 1000)
     }
   }
 }

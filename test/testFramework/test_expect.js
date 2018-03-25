@@ -15,7 +15,8 @@ describe('expect', () => {
     expect(() => _expect(0, isTruthy)).toThrow({
       subject: 0,
       predicate: isTruthy,
-      params: []
+      params: [],
+      toString: jasmine.anything()
     })
   })
 
@@ -27,7 +28,8 @@ describe('expect', () => {
     expect(() => _expect(1, isExactly, 2)).toThrow({
       subject: 1,
       predicate: isExactly,
-      params: [2]
+      params: [2],
+      toString: jasmine.anything()
     })
   })
 

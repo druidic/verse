@@ -2,7 +2,12 @@
 function _expect(subject, predicate, ...params) {
   if (!predicate) throw 'expect() requires a function as the second argument'
   if (!predicate(...params, subject)) {
-    throw {subject, predicate, params}
+    throw {
+      subject, predicate, params,
+      toString() {
+        return `Expected that ${subject} ${predicate.name} ${params.join(', ')}`
+      }
+    }
   }
 }
 
