@@ -112,4 +112,55 @@ describe('Bard', () => {
       'once there was a dog, and his name was...')
     expect(store.emit).toHaveBeenCalledWith('jim!')
   })
+
+  it('starts a background timer thread', () => {
+    b.begin(function*(tell) {
+      let i = 0
+      yield startTimer(1, () => {
+        tell('hello ' + i++)
+      })
+      tell('main thread')
+      yield wait(3)
+    })
+
+    expect(store.emit).toHaveBeenCalledWith('main thread')
+    expect(store.emit).not.toHaveBeenCalledWith('hello 0')
+    jasmine.clock().tick(1001)
+    expect(store.emit).toHaveBeenCalledWith('hello 0')
+    expect(store.emit).not.toHaveBeenCalledWith('hello 1')
+    jasmine.clock().tick(1000)
+    expect(store.emit).toHaveBeenCalledWith('hello 1')
+  })
+
+  it('stops timers when the main thread finishes', () => {
+    b.begin(function*(tell) {
+      let a = 0, b = 0
+      yield startTimer(0.99, () => tell('a = ' + a++))
+      yield startTimer(0.49, () => tell('b = ' + b++))
+      tell('main thread')
+      yield wait(3)
+      tell('done')
+    })
+
+    expect(store.emit).toHaveBeenCalledWith('main thread')
+    expect(store.emit.calls.count()).toBe(1)
+    jasmine.clock().tick(1000)
+    expect(store.emit).toHaveBeenCalledWith('a = 0')
+    expect(store.emit).toHaveBeenCalledWith('b = 0')
+    expect(store.emit).toHaveBeenCalledWith('b = 1')
+    expect(store.emit.calls.count()).toBe(4)
+    jasmine.clock().tick(1000)
+    expect(store.emit).toHaveBeenCalledWith('a = 1')
+    expect(store.emit).toHaveBeenCalledWith('b = 2')
+    expect(store.emit).toHaveBeenCalledWith('b = 3')
+    expect(store.emit.calls.count()).toBe(7)
+    jasmine.clock().tick(1001)
+    expect(store.emit).toHaveBeenCalledWith('a = 2')
+    expect(store.emit).toHaveBeenCalledWith('b = 4')
+    expect(store.emit).toHaveBeenCalledWith('b = 5')
+    expect(store.emit).toHaveBeenCalledWith('done')
+    expect(store.emit.calls.count()).toBe(11)
+    jasmine.clock().tick(9999)
+    expect(store.emit.calls.count()).toBe(11)
+  })
 })

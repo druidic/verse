@@ -19,3 +19,11 @@ function waitForInput() {
     return result
   }
 }
+
+function startTimer(seconds, callback) {
+  return {
+    effectType: 'startTimer',
+    seconds,
+    callback
+  }
+}
