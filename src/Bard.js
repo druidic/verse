@@ -1,5 +1,7 @@
 function Bard(store) {
   let stack = []
+  let state = ''
+
   return {
     begin,
     receiveKeydown
@@ -14,6 +16,7 @@ function Bard(store) {
   }
 
   function receiveKeydown({key}) {
+    if (state !== 'waiting for char') return
     run(key)
   }
 
@@ -32,6 +35,10 @@ function Bard(store) {
     if (isGeneratorFunction(effect)) {
       begin(effect)
       return
+    }
+
+    if (effect.effectType === 'waitForChar') {
+      state = 'waiting for char'
     }
 
     if (effect.effectType === 'wait') {

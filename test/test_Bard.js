@@ -42,6 +42,16 @@ describe('Bard', () => {
     expect(store.emit).toHaveBeenCalledWith('there was a dog')
   })
 
+  it('ignores keypresses while pausing', () => {
+    b.begin(function*(tell) {
+      yield wait(1)
+      tell('done')
+    })
+
+    b.receiveKeydown('a')
+    expect(store.emit).not.toHaveBeenCalled()
+  })
+
   it('starts a story-within-a-story', () => {
     b.begin(function*(tell) {
       tell('ahem')
