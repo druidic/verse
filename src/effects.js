@@ -28,10 +28,15 @@ function startTimer(seconds, callback) {
   }
 }
 
-
 function jump(generator) {
   return {
     effectType: 'jump',
     generator
+  }
+}
+
+function retry() {
+  return {
+    effectType: 'retry'
   }
 }

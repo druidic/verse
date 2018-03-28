@@ -175,4 +175,24 @@ describe('Bard', () => {
     expect(store.emit).toHaveBeenCalledWith('done')
     expect(store.emit).not.toHaveBeenCalledWith('this never happens')
   })
+
+  it('retries the current story', () => {
+    let tries = 1
+    b.begin(function*(tell) {
+      tell('try ' + tries)
+      if (tries++ > 2) return
+      yield retry()
+    })
+
+    expect(store.emit).toHaveBeenCalledWith('try 1')
+    expect(store.emit).toHaveBeenCalledWith('try 2')
+    expect(store.emit).toHaveBeenCalledWith('try 3')
+    expect(store.emit).not.toHaveBeenCalledWith('try 4')
+  })
+
+  it('aborts if it senses an infinite loop of retries', () => {
+    expect(() => b.begin(function*(tell) {
+      yield retry()
+    })).toThrow()
+  })
 })

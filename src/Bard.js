@@ -8,6 +8,7 @@ function Bard(store) {
   function begin(generator) {
     let saga = generator(store.emit)
     saga.timers = []
+    saga.generator = generator
     stack.push(saga)
     run()
   }
@@ -47,10 +48,16 @@ function Bard(store) {
       while (stack.length) pop()
       begin(effect.generator)
     }
+
+    if (effect.effectType === 'retry') {
+      let saga = pop()
+      begin(saga.generator)
+    }
   }
 
   function pop() {
     let saga = stack.pop()
     saga.timers.forEach(clearInterval)
+    return saga
   }
 }
