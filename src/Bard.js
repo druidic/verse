@@ -8,10 +8,7 @@ function Bard(store) {
   }
 
   function begin(generator) {
-    let saga = generator(store.emit)
-    saga.timers = []
-    saga.generator = generator
-    stack.push(saga)
+    push(generator)
     run()
   }
 
@@ -22,6 +19,7 @@ function Bard(store) {
 
   function run(returnFromYield) {
     if (!stack.length) return
+
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
 
     if (done) {
@@ -30,41 +28,51 @@ function Bard(store) {
       return
     }
 
-    _expect(effect, or(isObject, isGeneratorFunction))
-
     if (isGeneratorFunction(effect)) {
-      begin(effect)
+      push(effect)
+      run()
       return
     }
 
-    if (effect.effectType === 'waitForChar') {
+    switch (effect.effectType) {
+      case 'waitForChar':
       state = 'waiting for char'
-    }
+      return
 
-    if (effect.effectType === 'wait') {
+      case 'wait':
       setTimeout(run, effect.seconds * 1000)
-    }
+      return
 
-    if (effect.effectType === 'startTimer') {
+      case 'startTimer':
       let interval = setInterval(effect.callback, effect.seconds * 1000)
       lastOf(stack).timers.push(interval)
       run()
-    }
+      return
 
-    if (effect.effectType === 'jump') {
+      case 'jump':
       while (stack.length) pop()
-      begin(effect.generator)
-    }
+      push(effect.generator)
+      run()
+      return
 
-    if (effect.effectType === 'retry') {
+      case 'retry':
       let saga = pop()
-      begin(saga.generator)
-    }
+      push(saga.generator)
+      run()
+      return
 
-    if (effect.effectType === 'cancel') {
+      case 'cancel':
       pop()
       run()
+      return
     }
+  }
+
+  function push(generator) {
+    let saga = generator(store.emit)
+    saga.timers = []
+    saga.generator = generator
+    stack.push(saga)
   }
 
   function pop() {
