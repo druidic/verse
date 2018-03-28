@@ -18,8 +18,8 @@ function Bard(store) {
   }
 
   function run(returnFromYield) {
-    if (!stack.length) return
     waitingForChar = false
+    if (!stack.length) return
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
 
     if (done) {
