@@ -1,6 +1,6 @@
 function Bard(store) {
   let stack = []
-  let state = ''
+  let waitingForChar = false
 
   return {
     begin,
@@ -13,13 +13,13 @@ function Bard(store) {
   }
 
   function receiveKeydown({key}) {
-    if (state !== 'waiting for char') return
+    if (!waitingForChar) return
     run(key)
   }
 
   function run(returnFromYield) {
     if (!stack.length) return
-
+    waitingForChar = false
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
 
     if (done) {
@@ -36,7 +36,7 @@ function Bard(store) {
 
     switch (effect.effectType) {
       case 'waitForChar':
-      state = 'waiting for char'
+      waitingForChar = true
       return
 
       case 'wait':
