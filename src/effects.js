@@ -40,3 +40,9 @@ function retry() {
     effectType: 'retry'
   }
 }
+
+function cancel() {
+  return {
+    effectType: 'cancel'
+  }
+}

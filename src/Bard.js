@@ -53,6 +53,11 @@ function Bard(store) {
       let saga = pop()
       begin(saga.generator)
     }
+
+    if (effect.effectType === 'cancel') {
+      pop()
+      run()
+    }
   }
 
   function pop() {
