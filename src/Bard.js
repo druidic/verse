@@ -1,10 +1,12 @@
 function Bard(store) {
   let stack = []
   let waitingForChar = false
+  let waitTimeout = null
 
   return {
     begin,
-    receiveKeydown
+    receiveKeydown,
+    interrupt
   }
 
   function begin(generator) {
@@ -15,6 +17,14 @@ function Bard(store) {
   function receiveKeydown({key}) {
     if (!waitingForChar) return
     run(key)
+  }
+
+  function interrupt(signal = SIGNAL_INTERRUPTED) {
+    if (waitTimeout !== null) {
+      clearTimeout(waitTimeout)
+      waitTimeout = null
+    }
+    run(signal)
   }
 
   function run(returnFromYield) {
@@ -40,7 +50,7 @@ function Bard(store) {
       return
 
       case 'wait':
-      setTimeout(run, effect.seconds * 1000)
+      waitTimeout = setTimeout(run, effect.seconds * 1000)
       return
 
       case 'startTimer':

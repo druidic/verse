@@ -42,6 +42,44 @@ describe('Bard', () => {
     expect(store.emit).toHaveBeenCalledWith('there was a dog')
   })
 
+  it('interrupts a pause', () => {
+    b.begin(function*(tell) {
+      let signal = yield wait(1)
+      tell('done ' + signal)
+    })
+
+    expect(store.emit).not.toHaveBeenCalled()
+    b.interrupt()
+    expect(store.emit).toHaveBeenCalledWith('done INTERRUPTED')
+  })
+
+  it('interrupts with a custom signal', () => {
+    b.begin(function*(tell) {
+      let signal = yield wait(1)
+      tell('done ' + signal)
+    })
+
+    expect(store.emit).not.toHaveBeenCalled()
+    b.interrupt('boop')
+    expect(store.emit).toHaveBeenCalledWith('done boop')
+  })
+
+  it('cancels the timeout for an interrupted wait', () => {
+    b.begin(function*(tell) {
+      yield wait(1)
+      tell('done')
+      yield wait(10)
+      tell('should only be called after 10 seconds')
+    })
+
+    b.interrupt()
+    expect(store.emit).toHaveBeenCalledWith('done')
+    jasmine.clock().tick(1001)
+    expect(store.emit).not.toHaveBeenCalledWith('should only be called after 10 seconds')
+    jasmine.clock().tick(9000)
+    expect(store.emit).toHaveBeenCalledWith('should only be called after 10 seconds')
+  })
+
   it('ignores keypresses while pausing', () => {
     b.begin(function*(tell) {
       yield wait(1)
