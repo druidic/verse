@@ -20,15 +20,14 @@ function Bard(store) {
   }
 
   function interrupt(signal = SIGNAL_INTERRUPTED) {
-    if (waitTimeout !== null) {
-      clearTimeout(waitTimeout)
-      waitTimeout = null
-    }
+    clearTimeout(waitTimeout)
     run(signal)
   }
 
   function run(returnFromYield) {
     waitingForChar = false
+    waitTimeout = null
+
     if (!stack.length) return
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
 

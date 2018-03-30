@@ -130,6 +130,16 @@ describe('Bard', () => {
     expect(store.emit).toHaveBeenCalledWith('3!')
   })
 
+  it('interrupts a wait for a keypress', () => {
+    b.begin(function*(tell) {
+      let c = yield waitForChar()
+      tell('' + c)
+    })
+
+    b.interrupt()
+    expect(store.emit).toHaveBeenCalledWith('INTERRUPTED')
+  })
+
   it('receives multiple keypresses', () => {
     b.begin(function*(tell) {
       let result = '', a
