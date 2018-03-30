@@ -47,4 +47,13 @@ describe('Store', () => {
     let store = Store(isNumber, reducer)
     expect(store.emit).toThrow()
   })
+
+  it('publishes the state to a subscriber', () => {
+    let store = Store(isNumber, n => n + 1)
+    let latestState
+    store.subscribe(state => latestState = state)
+    expect(latestState).not.toBeDefined()
+    store.emit()
+    expect(latestState).toBe(1)
+  })
 })
