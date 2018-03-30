@@ -165,7 +165,7 @@ describe('Bard', () => {
     b.receiveKeydown({key: 'j'})
     b.receiveKeydown({key: 'i'})
     b.receiveKeydown({key: 'm'})
-    b.receiveKeydown({key: '\n'})
+    b.receiveKeydown({key: 'Enter'})
     expect(store.emit).toHaveBeenCalledWith(
       'once there was a dog, and his name was...')
     expect(store.emit).toHaveBeenCalledWith('jim!')

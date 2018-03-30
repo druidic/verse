@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Verse Demo</title>
+    <style type="text/css">
+#terminal {
+  font-family: monospace;
+  white-space: pre;
+}
+    </style>
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <script type="text/javascript" src=".build-tmp/verse.js"></script>
+    <script>
+let bard, store
+
+document.body.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    bard.interrupt()
+  } else {
+    bard.receiveKeydown(event)
+  }
+})
+
+function *GuessingGame(tell) {
+  let secret = Math.ceil(Math.random() * 100)
+  tell(log("I'm thinking of a number between 1 and 100"))
+  yield function*() {
+    let number = yield GetNumber
+    if (number > secret) {
+      tell(log(number + ' is too high!'))
+      yield retry()
+    } else if (number < secret) {
+      tell(log(number + ' is too low!'))
+      yield retry()
+    } else {
+      tell(log('You got it!'))
+    }
+  }
+}
+
+function *GetNumber(tell) {
+  let line = yield waitForLine()
+  if (isNaN(line)) {
+    tell(log("That's not a number. Try again."))
+    yield retry()
+  }
+  return +line
+}
+
+function reducer(logs, action) {
+  switch (action.type) {
+    case 'LOG':
+    return [...logs, action.params]
+
+    case 'REPLACE_LAST_LOG':
+    return [...dropLast(1, logs), action.params]
+  }
+  return logs
+}
+
+function log(string) {
+  return {
+    type: 'LOG',
+    params: string
+  }
+}
+
+function replaceLastLog(string) {
+  return {
+    type: 'REPLACE_LAST_LOG',
+    params: string
+  }
+}
+
+function last(n, array) {
+  if (n > array.length) return array
+  return array.slice(array.length - n)
+}
+
+function dropLast(n, array) {
+  if (n > array.length) return []
+  return array.slice(0, array.length - n)
+}
+
+function view(state) {
+  terminal.innerText = last(30, state).join('\n')
+}
+
+function main() {
+  store = Store(isArrayOf(isString), reducer)
+  store.subscribe(view)
+  bard = Bard(store)
+  bard.begin(GuessingGame)
+}
+
+function waitForLine() {
+  return function*(tell) {
+    let result = '', a
+    tell(log('>'))
+    yield function*() {
+      let c = yield waitForChar()
+      if (c === SIGNAL_INTERRUPTED) return
+      if (c !== 'Enter') {
+        result += c
+        tell(replaceLastLog('> ' + result))
+        yield retry()
+      }
+    }
+    return result
+  }
+}
+
+main()
+    </script>
+  </body>
+</html>

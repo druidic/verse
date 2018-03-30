@@ -12,9 +12,9 @@ function waitForChar() {
 }
 
 function waitForInput() {
-  return function*() {
+  return function*(tell) {
     let result = '', a
-    while((a = yield waitForChar()) !== '\n')
+    while((a = yield waitForChar()) !== 'Enter')
       result += a
     return result
   }
