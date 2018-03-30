@@ -16,6 +16,8 @@
     <script>
 let bard, store
 
+/* DOM STUFF */
+
 document.body.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     bard.interrupt()
@@ -23,6 +25,27 @@ document.body.addEventListener('keydown', event => {
     bard.receiveKeydown(event)
   }
 })
+
+function view(state) {
+  terminal.innerText = last(30, state.logs).join('\n')
+  if (state.cursor) {
+    terminal.innerText += state.cursor
+  }
+}
+
+/* MAIN */
+
+function main() {
+  store = Store({
+    logs: isArrayOf(isString),
+    cursor: isString
+  }, reducer)
+  store.subscribe(view)
+  bard = Bard(store)
+  bard.begin(GuessingGame)
+}
+
+/* SAGAS */
 
 function *GuessingGame(tell) {
   let secret = Math.ceil(Math.random() * 100)
@@ -50,7 +73,43 @@ function *GetNumber(tell) {
   return +line
 }
 
-function reducer(logs, action) {
+/* EFFECTS */
+
+function waitForLine() {
+  return function*(tell) {
+    let result = '', a
+    let cursor = '_'
+    tell(setCursor(cursor))
+    yield startTimer(0.4, () => {
+      cursor = cursor ? '' : '_'
+      tell(setCursor(cursor))
+    })
+
+    tell(log('>'))
+    yield function*() {
+      let c = yield waitForChar()
+      if (c === SIGNAL_INTERRUPTED) return
+      if (c !== 'Enter') {
+        result += c
+        tell(replaceLastLog('> ' + result))
+        yield retry()
+      }
+    }
+    tell(setCursor(''))
+    return result
+  }
+}
+
+/* REDUCERS */
+
+function reducer(state, action) {
+  return reduceByDelegates(state, action, {
+    logs: logsReducer,
+    cursor: cursorReducer
+  })
+}
+
+function logsReducer(logs, action) {
   switch (action.type) {
     case 'LOG':
     return [...logs, action.params]
@@ -60,6 +119,16 @@ function reducer(logs, action) {
   }
   return logs
 }
+
+function cursorReducer(cursor, action) {
+  switch (action.type) {
+    case 'SET_CURSOR':
+    return action.params
+  }
+  return cursor
+}
+
+/* ACTIONS */
 
 function log(string) {
   return {
@@ -75,6 +144,15 @@ function replaceLastLog(string) {
   }
 }
 
+function setCursor(string) {
+  return {
+    type: 'SET_CURSOR',
+    params: string
+  }
+}
+
+/* LIBRARY */
+
 function last(n, array) {
   if (n > array.length) return array
   return array.slice(array.length - n)
@@ -85,32 +163,14 @@ function dropLast(n, array) {
   return array.slice(0, array.length - n)
 }
 
-function view(state) {
-  terminal.innerText = last(30, state).join('\n')
-}
-
-function main() {
-  store = Store(isArrayOf(isString), reducer)
-  store.subscribe(view)
-  bard = Bard(store)
-  bard.begin(GuessingGame)
-}
-
-function waitForLine() {
-  return function*(tell) {
-    let result = '', a
-    tell(log('>'))
-    yield function*() {
-      let c = yield waitForChar()
-      if (c === SIGNAL_INTERRUPTED) return
-      if (c !== 'Enter') {
-        result += c
-        tell(replaceLastLog('> ' + result))
-        yield retry()
-      }
+function reduceByDelegates(state, action, reducerMap) {
+  let result = {}
+  for (let key in reducerMap) {
+    if (has(key, reducerMap)) {
+      result[key] = reducerMap[key](state[key], action)
     }
-    return result
   }
+  return result
 }
 
 main()

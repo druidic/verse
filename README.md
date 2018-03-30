@@ -51,6 +51,10 @@ you can read the code to figure out why it did that.
 - HTTP support
 - support for React components?
 
+### TODO
+
+- Better reporting for type errors
+
 ## Why?
 
 Existing JavaScript UI frameworks and development practices do not adequately
