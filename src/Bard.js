@@ -69,11 +69,6 @@ function Bard(store) {
       push(saga.generator)
       run()
       return
-
-      case 'cancel':
-      pop()
-      run()
-      return
     }
   }
 

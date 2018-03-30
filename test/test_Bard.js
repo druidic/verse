@@ -253,19 +253,4 @@ describe('Bard', () => {
       yield retry()
     })).toThrow()
   })
-
-  it('cancels the current story', () => {
-    b.begin(function*(tell) {
-      yield function*(tell) {
-        tell('substory')
-        yield cancel()
-        tell('never called')
-      }
-      tell('cancel returns here')
-    })
-
-    expect(store.emit).toHaveBeenCalledWith('substory')
-    expect(store.emit).toHaveBeenCalledWith('cancel returns here')
-    expect(store.emit).not.toHaveBeenCalledWith('never called')
-  })
 })
