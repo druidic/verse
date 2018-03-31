@@ -19,4 +19,8 @@ describe('getTestFunctions', () => {
     expect(getTestFunctions({a: theTest}))
       .toEqual([])
   })
+
+  it('ignores null values on the object', () => {
+    expect(() => getTestFunctions({a: null})).not.toThrow()
+  })
 })

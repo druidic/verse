@@ -30,6 +30,7 @@ function runTests(tests) {
 
 function getTestFunctions(global) {
   return Object.values(global)
+    .filter(isTruthy)
     .filter(has('name'))
     .filter(({name}) => startsWith('test_', name))
 }

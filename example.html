@@ -14,15 +14,15 @@
     <div id="terminal"></div>
     <script type="text/javascript" src=".build-tmp/verse.js"></script>
     <script>
-let bard, store
+let app
 
 /* DOM STUFF */
 
 document.body.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
-    bard.interrupt()
+    app.interrupt()
   } else {
-    bard.receiveKeydown(event)
+    app.receiveKeydown(event)
   }
 })
 
@@ -36,16 +36,23 @@ function view(state) {
 /* MAIN */
 
 function main() {
-  store = Store({
+  app = App(window)
+}
+
+/* STATE */
+
+function getStateType() {
+  return {
     logs: isArrayOf(isString),
     cursor: isString
-  }, reducer)
-  store.subscribe(view)
-  bard = Bard(store)
-  bard.begin(GuessingGame)
+  }
 }
 
 /* SAGAS */
+
+function *init() {
+  yield GuessingGame
+}
 
 function *GuessingGame(tell) {
   let secret = Math.ceil(Math.random() * 100)

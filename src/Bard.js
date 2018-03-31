@@ -1,3 +1,12 @@
+function NullBard() {
+  return {
+    begin() {},
+    receiveKeydown() {},
+    interrupt() {},
+    stop() {}
+  }
+}
+
 function Bard(store) {
   let stack = []
   let waitingForChar = false
@@ -6,7 +15,8 @@ function Bard(store) {
   return {
     begin,
     receiveKeydown,
-    interrupt
+    interrupt,
+    stop
   }
 
   function begin(generator) {
@@ -22,6 +32,10 @@ function Bard(store) {
   function interrupt(signal = SIGNAL_INTERRUPTED) {
     clearTimeout(waitTimeout)
     run(signal)
+  }
+
+  function stop() {
+    while (stack.length) pop()
   }
 
   function run(returnFromYield) {
