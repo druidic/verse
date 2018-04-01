@@ -40,3 +40,10 @@ function retry() {
     effectType: 'retry'
   }
 }
+
+function log(message) {
+  return {
+    effectType: 'log',
+    message
+  }
+}

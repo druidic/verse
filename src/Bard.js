@@ -7,7 +7,7 @@ function NullBard() {
   }
 }
 
-function Bard(store) {
+function Bard(store, view) {
   let stack = []
   let waitingForChar = false
   let waitTimeout = null
@@ -81,6 +81,11 @@ function Bard(store) {
       case 'retry':
       let saga = pop()
       push(saga.generator)
+      run()
+      return
+
+      case 'log':
+      view.log(effect.message)
       run()
       return
     }

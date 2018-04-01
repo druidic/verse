@@ -1,8 +1,9 @@
 describe('Bard', () => {
-  let store, b
+  let store, view, b
   beforeEach(() => {
     store = jasmine.createSpyObj('store', ['emit'])
-    b = Bard(store)
+    view  = jasmine.createSpyObj('view', ['log'])
+    b = Bard(store, view)
     jasmine.clock().install()
   })
 
@@ -252,5 +253,12 @@ describe('Bard', () => {
     expect(() => b.begin(function*(tell) {
       yield retry()
     })).toThrow()
+  })
+
+  it('logs a message', () => {
+    b.begin(function*(tell) {
+      yield log('hello, world!')
+    })
+    expect(view.log).toHaveBeenCalledWith('hello, world!')
   })
 })
