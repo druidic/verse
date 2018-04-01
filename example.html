@@ -33,6 +33,37 @@ function view(state) {
   }
 }
 
+function viewTestResults(results) {
+  terminal.innerText =
+    'TESTS FAILED:\n' +
+    results.failures.join('\n')
+}
+
+/* TESTS */
+
+function test_last_empty() {
+  _expect(last(1, []), Array.isArray)
+  _expect(last(1, []).length, isExactly, 0)
+}
+
+function test_last_zeroReturnsEmpty() {
+  _expect(last(0, [5]).length, isExactly, 0)
+}
+
+function test_last_oneElement() {
+  _expect(last(1, [5]).length, isExactly, 1)
+  _expect(last(1, [5])[0], isExactly, 5)
+}
+
+function test_last_requestedLengthExceedsInputLength() {
+  _expect(last(2, [5]).length, isExactly, 1)
+}
+
+function test_last_getsTheLastOfMultipleElements() {
+  _expect(last(1, [5, 6]).length, isExactly, 1)
+  _expect(last(1, [5, 6])[0], isExactly, 6)
+}
+
 /* MAIN */
 
 function main() {
