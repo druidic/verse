@@ -41,6 +41,7 @@ function Bard(store, view) {
   function run(returnFromYield) {
     waitingForChar = false
     waitTimeout = null
+    let saga
 
     if (!stack.length) return
     let {value: effect, done} = lastOf(stack).next(returnFromYield)
@@ -59,10 +60,12 @@ function Bard(store, view) {
 
     switch (effect.effectType) {
       case 'waitForChar':
+      updateScreen()
       waitingForChar = true
       return
 
       case 'wait':
+      updateScreen()
       waitTimeout = setTimeout(run, effect.seconds * 1000)
       return
 
@@ -79,13 +82,20 @@ function Bard(store, view) {
       return
 
       case 'retry':
-      let saga = pop()
+      saga = pop()
       push(saga.generator)
       run()
       return
 
       case 'log':
       view.log(effect.message)
+      run()
+      return
+
+      case 'startDisplay':
+      saga = lastOf(stack)
+      saga.render = effect.render
+      updateScreen()
       run()
       return
     }
@@ -95,6 +105,7 @@ function Bard(store, view) {
     let saga = generator(store.emit)
     saga.timers = []
     saga.generator = generator
+    saga.render = null
     stack.push(saga)
   }
 
@@ -102,5 +113,10 @@ function Bard(store, view) {
     let saga = stack.pop()
     saga.timers.forEach(clearInterval)
     return saga
+  }
+
+  function updateScreen() {
+    let {render} = lastOf(stack)
+    if (render) view.screen(render(store.getState()))
   }
 }

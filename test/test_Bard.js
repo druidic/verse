@@ -1,8 +1,8 @@
 describe('Bard', () => {
   let store, view, b
   beforeEach(() => {
-    store = jasmine.createSpyObj('store', ['emit'])
-    view  = jasmine.createSpyObj('view', ['log'])
+    store = jasmine.createSpyObj('store', ['emit', 'getState'])
+    view  = jasmine.createSpyObj('view', ['log', 'screen'])
     b = Bard(store, view)
     jasmine.clock().install()
   })
@@ -260,5 +260,72 @@ describe('Bard', () => {
       yield log('hello, world!')
     })
     expect(view.log).toHaveBeenCalledWith('hello, world!')
+  })
+
+  it('plugs the display into a render function', () => {
+    b.begin(function*(tell) {
+      yield startDisplay(() => {
+        return ['whoa']
+      })
+    })
+    expect(view.screen).toHaveBeenCalledWith(['whoa'])
+  })
+
+  it('re-renders whenever there is a pause in the story', () => {
+    b.begin(function*(tell) {
+      yield startDisplay(() => {
+        return ['whoa']
+      })
+      yield wait(1)
+    })
+    expect(view.screen.calls.count()).toBe(2)
+  })
+
+  it('re-renders when the Bard pauses for input', () => {
+    b.begin(function*(tell) {
+      yield startDisplay(() => {
+        return ['whoa']
+      })
+      yield waitForChar()
+    })
+    expect(view.screen.calls.count()).toBe(2)
+  })
+
+  it('passes the state to the render function', () => {
+    store = Store(isString, state => state + 'x')
+    b = Bard(store, view)
+    b.begin(function*(tell) {
+      yield startDisplay(state => {
+        return [state]
+      })
+      tell({})
+      yield wait(1)
+    })
+    expect(view.screen).toHaveBeenCalledWith([''])
+    expect(view.screen).toHaveBeenCalledWith(['x'])
+  })
+
+  it('reverts the display when the stack frame that rendered it pops', () => {
+    b.begin(function*(tell) {
+      yield startDisplay(state => {
+        return ['outside']
+      })
+      yield wait(1)
+      yield function*() {
+        yield startDisplay(state => {
+          return ['inside']
+        })
+        yield wait(1)
+      }
+      yield wait(1)
+    })
+    expect(view.screen).toHaveBeenCalledWith(['outside'])
+    expect(view.screen).not.toHaveBeenCalledWith(['inside'])
+    jasmine.clock().tick(1001)
+    // now we're in the inner function*()
+    expect(view.screen).toHaveBeenCalledWith(['inside'])
+    jasmine.clock().tick(1000)
+    // now we're back out
+    expect(view.screen.calls.mostRecent().args).toEqual([['outside']])
   })
 })

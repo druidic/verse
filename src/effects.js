@@ -47,3 +47,10 @@ function log(message) {
     message
   }
 }
+
+function startDisplay(render) {
+  return {
+    effectType: 'startDisplay',
+    render
+  }
+}

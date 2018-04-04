@@ -14,8 +14,7 @@ function App(global) {
   }
 
   let store = Store(getStateType(), reducer)
-  store.subscribe(view)
-  bard = Bard(store)
+  bard = Bard(store, view)
   bard.begin(init)
 
   return bard

@@ -9,13 +9,14 @@ describe('App', () => {
       },
       *init(tell) {
         tell('foo')
+        yield startDisplay(state => state)
       },
-      view: jasmine.createSpy('view')
+      view: jasmine.createSpyObj('view', ['screen'])
     }
 
     let app = App(global)
 
-    expect(global.view).toHaveBeenCalledWith('state: foo')
+    expect(global.view.screen).toHaveBeenCalledWith('state: foo')
   })
 
   it('runs tests before starting', () => {
