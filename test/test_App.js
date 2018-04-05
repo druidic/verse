@@ -24,7 +24,8 @@ describe('App', () => {
       test_Foo() {
         _expect(1, isExactly, 2)
       },
-      viewTestResults: jasmine.createSpy('viewTestResults')
+      viewTestResults: jasmine.createSpy('viewTestResults'),
+      view() {}
     }
     let app = App(global)
     expect(global.viewTestResults).toHaveBeenCalledWith({
@@ -55,5 +56,14 @@ describe('App', () => {
     jasmine.clock().tick(1001)
     expect(timer).not.toHaveBeenCalled()
     jasmine.clock().uninstall()
+  })
+
+  it('errors if view is not defined', () => {
+    let global = {
+      getStateType() {},
+      reducer(state, action) {},
+      *init(tell) {}
+    }
+    expect(() => App(global)).toThrow('You must define a view() function at the top level')
   })
 })

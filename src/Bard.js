@@ -70,7 +70,7 @@ function Bard(store, view) {
       return
 
       case 'startTimer':
-      let interval = setInterval(effect.callback, effect.seconds * 1000)
+      let interval = setInterval(callAndRender(effect.callback), effect.seconds * 1000)
       lastOf(stack).timers.push(interval)
       run()
       return
@@ -98,6 +98,16 @@ function Bard(store, view) {
       updateScreen()
       run()
       return
+
+      case 'startInputDisplay':
+      saga = lastOf(stack)
+      saga.inputRender = effect.render
+      updateScreen()
+      run()
+      return
+
+      default:
+      throw 'You `yield`ed something weird: ' + JSON.stringify(effect)
     }
   }
 
@@ -106,6 +116,7 @@ function Bard(store, view) {
     saga.timers = []
     saga.generator = generator
     saga.render = null
+    saga.inputRender = null
     stack.push(saga)
   }
 
@@ -116,7 +127,25 @@ function Bard(store, view) {
   }
 
   function updateScreen() {
-    let {render} = lastOf(stack)
+    let render, inputRender, i
+    for (i = stack.length - 1; i >= 0; i--) {
+      if (!render && stack[i].render) {
+        render = stack[i].render
+      }
+      if (!inputRender && stack[i].inputRender) {
+        inputRender = stack[i].inputRender
+      }
+      if (render && inputRender) break;
+    }
+
     if (render) view.screen(render(store.getState()))
+    if (inputRender) view.input(inputRender(store.getState()))
+  }
+
+  function callAndRender(fn) {
+    return function() {
+      fn()
+      updateScreen()
+    }
   }
 }

@@ -7,6 +7,8 @@ function App(global) {
     init,
   } = global
 
+  if (!view) throw 'You must define a view() function at the top level'
+
   let results = runTests(getTestFunctions(global))
   if (results.failures.length) {
     viewTestResults(results)

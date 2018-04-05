@@ -54,3 +54,10 @@ function startDisplay(render) {
     render
   }
 }
+
+function startInputDisplay(render) {
+  return {
+    effectType: 'startInputDisplay',
+    render
+  }
+}

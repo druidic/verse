@@ -2,7 +2,7 @@ describe('Bard', () => {
   let store, view, b
   beforeEach(() => {
     store = jasmine.createSpyObj('store', ['emit', 'getState'])
-    view  = jasmine.createSpyObj('view', ['log', 'screen'])
+    view  = jasmine.createSpyObj('view', ['log', 'screen', 'input'])
     b = Bard(store, view)
     jasmine.clock().install()
   })
@@ -267,8 +267,12 @@ describe('Bard', () => {
       yield startDisplay(() => {
         return ['whoa']
       })
+      yield startInputDisplay(() => {
+        return ['1234']
+      })
     })
     expect(view.screen).toHaveBeenCalledWith(['whoa'])
+    expect(view.input).toHaveBeenCalledWith(['1234'])
   })
 
   it('re-renders whenever there is a pause in the story', () => {
@@ -286,9 +290,13 @@ describe('Bard', () => {
       yield startDisplay(() => {
         return ['whoa']
       })
+      yield startInputDisplay(() => {
+        return ['1234']
+      })
       yield waitForChar()
     })
-    expect(view.screen.calls.count()).toBe(2)
+    expect(view.screen.calls.count()).toBe(3)
+    expect(view.input.calls.count()).toBe(2)
   })
 
   it('passes the state to the render function', () => {
@@ -298,11 +306,16 @@ describe('Bard', () => {
       yield startDisplay(state => {
         return [state]
       })
+      yield startInputDisplay(state => {
+        return [state + '1234']
+      })
       tell({})
       yield wait(1)
     })
     expect(view.screen).toHaveBeenCalledWith([''])
     expect(view.screen).toHaveBeenCalledWith(['x'])
+    expect(view.input).toHaveBeenCalledWith(['1234'])
+    expect(view.input).toHaveBeenCalledWith(['x1234'])
   })
 
   it('reverts the display when the stack frame that rendered it pops', () => {
@@ -327,5 +340,41 @@ describe('Bard', () => {
     jasmine.clock().tick(1000)
     // now we're back out
     expect(view.screen.calls.mostRecent().args).toEqual([['outside']])
+  })
+
+  it('renders even if more stack frames have been pushed on top of the one that is rendering', () => {
+    b.begin(function*(tell) {
+      yield startDisplay(() => {
+        return ['outside']
+      })
+      yield startInputDisplay(() => {
+        return ['input outside']
+      })
+      yield function*() {
+        yield wait(1)
+      }
+    })
+    expect(view.screen.calls.count()).toEqual(3)
+    expect(view.input.calls.count()).toEqual(2)
+  })
+
+  it('renders when a timer goes off', () => {
+    b.begin(function*(tell) {
+      let count = 0
+      yield startTimer(1, () => {
+        count++
+      })
+      yield startDisplay(() => [count])
+      yield wait(2)
+    })
+    expect(view.screen).toHaveBeenCalledWith([0])
+    jasmine.clock().tick(1001)
+    expect(view.screen).toHaveBeenCalledWith([1])
+  })
+
+  it('errors if you yield something weird', () => {
+    expect(() => b.begin(function*(tell) {
+      yield {}
+    })).toThrow()
   })
 })
