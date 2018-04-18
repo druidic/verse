@@ -5,7 +5,7 @@ function _expect(subject, predicate, ...params) {
     throw {
       subject, predicate, params,
       toString() {
-        return `Expected that ${subject} ${predicate.name} ${params.join(', ')}`
+        return 'Expected that ' + subject + ' ' + predicate.name + ' ' + params.join(', ')
       }
     }
   }

@@ -7,7 +7,7 @@ function isExactly(a, b) {
 }
 
 function has(prop, obj) {
-  if (arguments.length < 2) return partialApply(has, arguments, `has(${prop})`)
+  if (arguments.length < 2) return partialApply(has, arguments, 'has(' + prop + ')')
   return Object.prototype.hasOwnProperty.call(obj, prop)
 }
 
@@ -47,7 +47,7 @@ function isGeneratorFunction(a) {
 }
 
 function or(p, q) {
-  let name = `or(${p.name}, ${q.name})`
+  let name = 'or(' + p.name + ', ' + q.name + ')'
   return {[name]: (...args) =>
     p(...args) || q(...args)
   }[name]
