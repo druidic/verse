@@ -17,6 +17,7 @@ function Store(type, reducer) {
     _expect(newState, satisfies, type)
     state = newState
     subscriber_(newState)
+    return newState
   }
 
   function subscribe(subscriber) {

@@ -56,4 +56,12 @@ describe('Store', () => {
     store.emit()
     expect(latestState).toBe(1)
   })
+
+  it('returns the new state from emit()', () => {
+    let store = Store(isNumber, n => n + 1)
+    let returned = store.emit()
+    expect(returned).toBe(1)
+    returned = store.emit()
+    expect(returned).toBe(2)
+  })
 })

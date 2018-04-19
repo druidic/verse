@@ -66,4 +66,22 @@ describe('App', () => {
     }
     expect(() => App(global)).toThrow('You must define a view() function at the top level')
   })
+
+  it('allows the program to read and update the state', () => {
+    let global = {
+      getStateType() { return isNumber },
+      reducer(state, action) { return (state + 1) * 2 },
+      *init(tell) {
+        let n = tell()
+        yield log(n)
+        n = tell()
+        yield log(n)
+      },
+      view: jasmine.createSpyObj('view', ['log'])
+    }
+
+    App(global)
+    expect(global.view.log).toHaveBeenCalledWith(2)
+    expect(global.view.log).toHaveBeenCalledWith(6)
+  })
 })
