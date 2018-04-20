@@ -299,6 +299,18 @@ describe('Bard', () => {
     expect(view.input.calls.count()).toBe(2)
   })
 
+  it('re-renders when a stack frame pops', () => {
+    b.begin(function*(tell) {
+      let x = 0
+      yield startDisplay(() => {
+        return [x]
+      })
+      x++
+    })
+    expect(view.screen.calls.count()).toBe(2)
+    expect(view.screen).toHaveBeenCalledWith([1])
+  })
+
   it('passes the state to the render function', () => {
     store = Store(isString, state => state + 'x')
     b = Bard(store, view)

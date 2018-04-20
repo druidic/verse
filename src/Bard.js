@@ -121,6 +121,7 @@ function Bard(store, view) {
   }
 
   function pop() {
+    updateScreen()
     let saga = stack.pop()
     saga.timers.forEach(clearInterval)
     return saga
