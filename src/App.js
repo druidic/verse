@@ -1,5 +1,5 @@
 function App(global) {
-  const {
+  let {
     viewTestResults,
     getStateType,
     reducer,
@@ -8,6 +8,8 @@ function App(global) {
   } = global
 
   if (!view) throw 'You must define a view() function at the top level'
+  if (!getStateType) getStateType = () => ({})
+  if (!init) init = function*() {}
 
   let results = runTests(getTestFunctions(global))
   if (results.failures.length) {

@@ -157,6 +157,15 @@ describe('Bard', () => {
   })
 
   it('waits for a line of input', () => {
+    function waitForInput() {
+      return function*(tell) {
+        let result = '', a
+        while((a = yield waitForChar()) !== 'Enter')
+          result += a
+        return result
+      }
+    }
+
     b.begin(function*(tell) {
       tell('once there was a dog, and his name was...')
       let name = yield waitForInput()

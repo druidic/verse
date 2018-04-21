@@ -84,4 +84,14 @@ describe('App', () => {
     expect(global.view.log).toHaveBeenCalledWith(2)
     expect(global.view.log).toHaveBeenCalledWith(6)
   })
+
+  it('defaults getStateType and init', () => {
+    let global = {
+      view: jasmine.createSpyObj('view', ['log'])
+    }
+    expect(() => App(global)).not.toThrow()
+    global.init = function*() { yield log('hi') }
+    App(global)
+    expect(global.view.log).toHaveBeenCalledWith('hi')
+  })
 })
