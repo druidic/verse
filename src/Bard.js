@@ -42,7 +42,7 @@ function Bard(store, view) {
     try {
       return tryRun(returnFromYield)
     } catch (e) {
-      view.error(new Error(translateError(e)))
+      view.error(translateError(e))
     }
   }
 
