@@ -2,7 +2,7 @@ describe('Bard', () => {
   let store, view, b
   beforeEach(() => {
     store = jasmine.createSpyObj('store', ['emit', 'getState'])
-    view  = jasmine.createSpyObj('view', ['log', 'screen', 'input'])
+    view  = jasmine.createSpyObj('view', ['log', 'screen', 'input', 'error'])
     b = Bard(store, view)
     jasmine.clock().install()
   })
@@ -259,9 +259,12 @@ describe('Bard', () => {
   })
 
   it('aborts if it senses an infinite loop of retries', () => {
-    expect(() => b.begin(function*(tell) {
+    b.begin(function*(tell) {
       yield retry()
-    })).toThrow()
+    })
+    expect(view.error).toHaveBeenCalled()
+    expect(view.error.calls.mostRecent().args[0].message)
+      .toBe('Too many retry() calls. Is there an infinite loop?')
   })
 
   it('logs a message', () => {
@@ -394,8 +397,22 @@ describe('Bard', () => {
   })
 
   it('errors if you yield something weird', () => {
-    expect(() => b.begin(function*(tell) {
-      yield {}
-    })).toThrow()
+    b.begin(function*(tell) {
+      yield {boo: 'hoo'}
+    })
+    expect(view.error).toHaveBeenCalled()
+    expect(view.error.calls.mostRecent().args[0].message)
+      .toEqual('You `yield`ed something weird: {"boo":"hoo"}')
+  })
+
+  it('halts after an error', () => {
+    b.begin(function*(tell) {
+      yield function*() {
+        yield 'bork'
+      }
+      yield log('never called')
+    })
+    expect(view.error).toHaveBeenCalled()
+    expect(view.log).not.toHaveBeenCalled()
   })
 })

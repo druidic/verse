@@ -39,6 +39,14 @@ function Bard(store, view) {
   }
 
   function run(returnFromYield) {
+    try {
+      return tryRun(returnFromYield)
+    } catch (e) {
+      view.error(new Error(translateError(e)))
+    }
+  }
+
+  function tryRun(returnFromYield) {
     waitingForChar = false
     waitTimeout = null
     let saga
@@ -107,7 +115,8 @@ function Bard(store, view) {
       return
 
       default:
-      throw 'You `yield`ed something weird: ' + JSON.stringify(effect)
+      view.error(new Error('You `yield`ed something weird: ' + JSON.stringify(effect)))
+      return
     }
   }
 
