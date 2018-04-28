@@ -2,12 +2,7 @@
 function _expect(subject, predicate, ...params) {
   if (!predicate) throw 'expect() requires a function as the second argument'
   if (!predicate(...params, subject)) {
-    throw {
-      subject, predicate, params,
-      toString() {
-        return 'Expected that ' + subject + ' ' + predicate.name + ' ' + params.join(', ')
-      }
-    }
+    throw ExpectationFailure(subject, predicate, params)
   }
 }
 
@@ -33,4 +28,17 @@ function getTestFunctions(global) {
     .filter(isTruthy)
     .filter(has('name'))
     .filter(({name}) => startsWith('test_', name))
+}
+
+function ExpectationFailure(subject, predicate, params) {
+  return {
+    subject, predicate, params,
+    toString() {
+      return 'Check failed!\n'
+        + 'Expected that\n'
+        + '  ' + subject + '\n'
+        + predicate.name + '\n'
+        + '  ' + params.join(', ')
+    }
+  }
 }

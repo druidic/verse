@@ -33,6 +33,20 @@ describe('expect', () => {
     })
   })
 
+  it('formats a human-readable description of the failure', () => {
+    let caught
+    try {
+      _expect(1, isExactly, 2)
+    } catch (e) {
+      caught = e
+    }
+    expect('' + caught).toBe(`Check failed!
+Expected that
+  1
+isExactly
+  2`)
+  })
+
   it('assumes a curryable argument order for predicates', () => {
     expect(() => _expect({a: 1}, has, 'a')).not.toThrow()
     expect(() => _expect('hello', startsWith, 'hell')).not.toThrow()
